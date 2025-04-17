@@ -11,7 +11,7 @@ const originalUsers = [
   { firstName: 'John', lastName: 'Doe', email: 'john.doe@kvk.nl', role: 'Developer', lastLogin: 'Donderdag 20 Februari, 15:20', status: 'approved' },
   { firstName: 'Jane', lastName: 'Doe', email: 'jane.doe@kvk.nl', role: 'HR', lastLogin: 'Zaterdag 22 Februari, 12:37', status: 'approved' },
   { firstName: 'Pending', lastName: 'User', email: 'pending.user@kvk.nl', role: 'Developer', lastLogin: 'N/A', status: 'pending' },
-];
+]; 
 
 const tabs = [
   { id: 'all', name: 'Alle gebruikers' },
