@@ -2,7 +2,7 @@ import Cookies from "universal-cookie";
 
 const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
-async function getCredentials(wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
+async function getCredentials(wallet_id = "awd") {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
 
@@ -17,11 +17,11 @@ async function getCredentials(wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93"
         return data;
     } catch (error) {
         console.error('Error:', error);
-        throw error;
+        return []
     }
 }
 
-async function getCredentialData(credential_id, wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
+async function getCredentialData(credential_id, wallet_id = "awd") {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
 
@@ -38,11 +38,11 @@ async function getCredentialData(credential_id, wallet_id = "a0a25a2f-042e-4e9a-
         return data;
     } catch (error) {
         console.error('Error:', error);
-        throw error;
+        return null
     }
 }
 
-async function resolveCredential(openIdCredentialOffer, wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
+async function resolveCredential(openIdCredentialOffer, wallet_id = "awd") {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
 
@@ -59,7 +59,7 @@ async function resolveCredential(openIdCredentialOffer, wallet_id = "a0a25a2f-04
         return data;
     } catch (error) {
         console.error('Error:', error);
-        throw error;
+        return null
     }
 }
 
@@ -68,7 +68,7 @@ async function getIssuerMetadata(issuer) {
     const { token } = cookies.get("session");
 
     try {
-        const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/a0a25a2f-042e-4e9a-8a2c-015cf78ccd93/exchange/resolveIssuerOpenIDMetadata?issuer=${issuer}`, {
+        const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/awd/exchange/resolveIssuerOpenIDMetadata?issuer=${issuer}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -78,11 +78,11 @@ async function getIssuerMetadata(issuer) {
         return data;
     } catch (error) {
         console.error('Error:', error);
-        throw error;
+        return null
     }
 }
 
-async function addCredential(did, openIdCredentialOffer, wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
+async function addCredential(did, openIdCredentialOffer, wallet_id = "awd") {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
 
@@ -103,7 +103,7 @@ async function addCredential(did, openIdCredentialOffer, wallet_id = "a0a25a2f-0
     }
 }
 
-async function getDid(wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
+async function getDid(wallet_id = "awd") {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
 
@@ -122,7 +122,7 @@ async function getDid(wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
     }
 }
 
-async function deleteCredential(urn, wallet_id = "a0a25a2f-042e-4e9a-8a2c-015cf78ccd93") {
+async function deleteCredential(urn, wallet_id = "awd") {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
 

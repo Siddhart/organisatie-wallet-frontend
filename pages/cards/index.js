@@ -21,7 +21,16 @@ const CardsOverview = () => {
         const fetchCards = async () => {
             try {
                 const cardsData = await getCredentials()
-                setCards(cardsData)
+
+                if(cardsData?.exception){
+                    setCards([])
+                }else{
+                    setCards(cardsData)
+                }
+
+                console.log(cardsData);
+                
+                
             } catch (error) {
                 console.error('Error fetching credentials:', error)
             } finally {
