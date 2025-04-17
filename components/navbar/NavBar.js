@@ -8,6 +8,7 @@ import PeopleSvg from '@/assets/icons/PeopleSvg'
 import QrSvg from '@/assets/icons/QrSvg'
 import SettingsSvg from '@/assets/icons/SettingsSvg'
 import LogoSvg from '@/assets/logo'
+import MyProfileSvg from '@/assets/icons/MyProfileSvg'
 
 //packages
 import autoAnimate from '@formkit/auto-animate'
@@ -72,19 +73,17 @@ const NavBar = () => {
                     <div className="w-full h-20 flex items-center justify-center">
                         <NavButton isHovering={isHovering} tooltip="Gebruikers" route={"/users"} svg={<PeopleSvg />} />
                     </div>
-                    <div className="w-full h-20 flex items-center justify-center">
+                    {/* <div className="w-full h-20 flex items-center justify-center">
                         <NavButton isHovering={isHovering} tooltip="Flows" route={"/qr"} svg={<QrSvg />} />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="flex flex-col gap-0">
                     <div className="w-full h-20 flex items-center justify-center">
                         <NavButton isHovering={isHovering} tooltip="Settings" route={"/settings"} svg={<SettingsSvg />} />
                     </div>
-                    <div className="w-20 h-20 flex items-center justify-center">
-                        <div className='bg-[#383EDE] aspect-square w-8 flex items-center justify-center text-white rounded-md'>
-                            <p className='text-sm font-bold'>SG</p>
-                        </div>
+                    <div className="w-full h-20 flex items-center justify-center">
+                        <NavButton isHovering={isHovering} tooltip="My Profile" route={"/users/myprofile"} svg={<MyProfileSvg />} />
                     </div>
                 </div>
             </div>

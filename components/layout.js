@@ -11,10 +11,12 @@ export default function Layout({ children }) {
     const router = useRouter();
     const cookies = new Cookies();
     const [isAuthPath, setIsAuthPath] = useState(false);
+    const [isDemoPath, setIsDemoPath] = useState(false);
 
     useEffect(() => {
         if (!router.isReady) return;
         setIsAuthPath(router.asPath.includes("/auth"));
+        setIsDemoPath(router.asPath.startsWith("/demo"));
     }, [router.isReady, router.asPath]);
 
     useEffect(() => {
@@ -22,7 +24,7 @@ export default function Layout({ children }) {
             const session = cookies.get("session");
             if (session && router.asPath.includes("/auth")) {
                 window.location.href = "/";
-            } else if (!session && !router.asPath.includes("/auth")) {
+            } else if (!session && !router.asPath.includes("/auth") && !router.asPath.startsWith("/demo")) {
                 router.push("/auth/login");
             }
         };
@@ -33,7 +35,7 @@ export default function Layout({ children }) {
         return () => clearInterval(interval);
     }, [router, router.isReady]);
 
-    if (isAuthPath) {
+    if (isAuthPath || isDemoPath) {
         return <main>{children}</main>;
     }
 

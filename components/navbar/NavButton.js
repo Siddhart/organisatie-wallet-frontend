@@ -27,7 +27,7 @@ const NavButton = ({ svg, route, tooltip, isHovering }) => {
         <div className='absolute left-20 mt-1'>
             <p style={{
                 color: selected ? "white" : "#383EDE"
-            }} className='font-semibold z-10'>{tooltip}</p>
+            }} className='font-semibold z-10 whitespace-nowrap'>{tooltip}</p>
         </div>
     </Link>
 }
