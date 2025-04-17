@@ -99,12 +99,11 @@ const CardInfo = () => {
             <div className='flex flex-col gap-8'>
               {Object.entries(rolePermissions).map(([role, { hasAccess, fields }]) => (
                 <div key={role} className='bg-white rounded-lg p-4 shadow-sm'>
-                  <div className='flex items-center justify-between'>
+                  <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
                     <h3 className='text-lg font-semibold text-[#445581]'>{role}</h3>
                     <button
                       onClick={() => toggleRoleAccess(role)}
-                      className={`px-4 py-2 rounded-md ${hasAccess ? 'bg-[#383EDE] text-white' : 'bg-[#AB0065] text-white'
-                        }`}
+                      className={`px-4 py-2 rounded-md ${hasAccess ? 'bg-[#383EDE] text-white' : 'bg-[#AB0065] text-white'}`}
                     >
                       {hasAccess ? 'Access Granted' : 'No Access'}
                     </button>
@@ -112,7 +111,7 @@ const CardInfo = () => {
                   {hasAccess && (
                     <div className='space-y-4 mt-4'>
                       <p className='text-sm text-gray-600'>Select which fields this role can access:</p>
-                      <div className='grid grid-cols-2 gap-4'>
+                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                         {credential?.parsedDocument?.credentialSubject &&
                           Object.entries(credential.parsedDocument.credentialSubject)
                             .filter(([_, value]) => value.length !== undefined)
@@ -159,22 +158,22 @@ const CardInfo = () => {
   }
 
   return (
-    <div className='relative w-full flex flex-row gap-6'>
+    <div className='relative w-full flex flex-col lg:flex-row gap-6 md:p-4 lg:p-0'>
       {deleteCredentialPopup && <Popup setPopup={setDeleteCredentialPopup} title={"Credential Verwijderen"} content={<DeleteCredentialPopupContent urn={id} />}></Popup>}
 
       {/* Left Column */}
-      <div className='w-1/3 flex flex-col'>
+      <div className='w-full lg:w-1/3 flex flex-col'>
         <div className='h-full relative overflow-y-auto'>
           <div className='bg-[#F5F4F9] rounded-md h-full'>
-            <div className='bg-[#383EDE] z-10 sticky top-0 p-6 text-white text-2xl font-bold rounded-t-md'>
+            <div className='bg-[#383EDE] z-10 sticky top-0 p-4 lg:p-6 text-white text-xl lg:text-2xl font-bold rounded-t-md'>
               <p>Kaartgegevens</p>
             </div>
 
-            <div className='px-4 pt-4 flex flex-col'>
+            <div className='px-4 pt-4 pb-4 md:pb-0 flex flex-col'>
               <div>
                 {credential && <CredentialCard showBorder shouldLink={false} data={credential} />}
               </div>
-              <div className=' mt-6'>
+              <div className='mt-6'>
                 <p className='font-bold text-xl text-[#445581] mb-4'>Issuer Informatie</p>
                 <div className='flex flex-col gap-4'>
                   <KeyValue title={"IssuerName"} value={credential?.parsedDocument?.issuer?.name} />
@@ -187,23 +186,23 @@ const CardInfo = () => {
       </div>
 
       {/* Right Column */}
-      <div className='w-2/3 bg-[#F5F4F9] rounded-md'>
-        <div className='bg-[#383EDE] p-4 text-white text-2xl font-bold rounded-t-md flex items-center justify-between'>
-          <div className='flex gap-4'>
+      <div className='w-full lg:w-2/3 bg-[#F5F4F9] rounded-md'>
+        <div className='bg-[#383EDE] p-4 text-white text-xl lg:text-2xl font-bold rounded-t-md flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
+          <div className='flex flex-wrap gap-2'>
             <button
-              className={`px-4 py-2 rounded-md ${activeTab === 'data' ? 'bg-white text-[#383EDE]' : 'hover:bg-white/20'}`}
+              className={`px-4 py-2 rounded-md text-sm lg:text-base ${activeTab === 'data' ? 'bg-white text-[#383EDE]' : 'hover:bg-white/20'}`}
               onClick={() => setActiveTab('data')}
             >
               Data
             </button>
             <button
-              className={`px-4 py-2 rounded-md ${activeTab === 'permissions' ? 'bg-white text-[#383EDE]' : 'hover:bg-white/20'}`}
+              className={`px-4 py-2 rounded-md text-sm lg:text-base ${activeTab === 'permissions' ? 'bg-white text-[#383EDE]' : 'hover:bg-white/20'}`}
               onClick={() => setActiveTab('permissions')}
             >
               Permissions
             </button>
             <button
-              className={`px-4 py-2 rounded-md ${activeTab === 'activity' ? 'bg-white text-[#383EDE]' : 'hover:bg-white/20'}`}
+              className={`px-4 py-2 rounded-md text-sm lg:text-base ${activeTab === 'activity' ? 'bg-white text-[#383EDE]' : 'hover:bg-white/20'}`}
               onClick={() => setActiveTab('activity')}
             >
               Activity
@@ -211,13 +210,13 @@ const CardInfo = () => {
           </div>
           <button
             onClick={() => setDeleteCredentialPopup(true)}
-            className='flex flex-row gap-2 p-4 bg-[#AB0065] text-xs font-bold rounded-md transition-colors'
+            className='flex flex-row items-center gap-2 p-2 sm:p-4 bg-[#AB0065] text-xs font-bold rounded-md transition-colors'
           >
             <DeleteSvg />
             <p>Kaart Verwijderen</p>
           </button>
         </div>
-        <div className='h-[calc(100vh-200px)] overflow-y-auto'>
+        <div className='h-[calc(100vh-300px)] lg:h-[calc(100vh-200px)] overflow-y-auto'>
           {renderTabContent()}
         </div>
       </div>
