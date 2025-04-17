@@ -2,9 +2,30 @@ import Cookies from "universal-cookie";
 
 const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
-async function getCredentials(wallet_id = "awd") {
+async function getWalletAdress() {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/accounts/wallets`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        const data = await response.json();
+        return data?.wallets[0]?.id;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
+async function getCredentials() {
+    const cookies = new Cookies();
+    const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) return [];
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/credentials?showDeleted=false&showPending=false`, {
@@ -17,13 +38,15 @@ async function getCredentials(wallet_id = "awd") {
         return data;
     } catch (error) {
         console.error('Error:', error);
-        return []
+        return [];
     }
 }
 
-async function getCredentialData(credential_id, wallet_id = "awd") {
+async function getCredentialData(credential_id) {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) return null;
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/credentials/${credential_id}`, {
@@ -33,18 +56,18 @@ async function getCredentialData(credential_id, wallet_id = "awd") {
             }
         });
         const data = await response.json();
-        console.log(data);
-
         return data;
     } catch (error) {
         console.error('Error:', error);
-        return null
+        return null;
     }
 }
 
-async function resolveCredential(openIdCredentialOffer, wallet_id = "awd") {
+async function resolveCredential(openIdCredentialOffer) {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) return null;
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/exchange/resolveCredentialOffer`, {
@@ -55,20 +78,21 @@ async function resolveCredential(openIdCredentialOffer, wallet_id = "awd") {
             body: openIdCredentialOffer
         });
         const data = await response.json();
-
         return data;
     } catch (error) {
         console.error('Error:', error);
-        return null
+        return null;
     }
 }
 
 async function getIssuerMetadata(issuer) {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) return null;
 
     try {
-        const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/awd/exchange/resolveIssuerOpenIDMetadata?issuer=${issuer}`, {
+        const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/exchange/resolveIssuerOpenIDMetadata?issuer=${issuer}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -78,13 +102,15 @@ async function getIssuerMetadata(issuer) {
         return data;
     } catch (error) {
         console.error('Error:', error);
-        return null
+        return null;
     }
 }
 
-async function addCredential(did, openIdCredentialOffer, wallet_id = "awd") {
+async function addCredential(did, openIdCredentialOffer) {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) throw new Error('No wallet ID available');
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/exchange/useOfferRequest?did=${did}`, {
@@ -95,7 +121,6 @@ async function addCredential(did, openIdCredentialOffer, wallet_id = "awd") {
             body: openIdCredentialOffer
         });
         const data = await response.json();
-
         return data;
     } catch (error) {
         console.error('Error:', error);
@@ -103,9 +128,11 @@ async function addCredential(did, openIdCredentialOffer, wallet_id = "awd") {
     }
 }
 
-async function getDid(wallet_id = "awd") {
+async function getDid() {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) throw new Error('No wallet ID available');
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/dids`, {
@@ -122,9 +149,11 @@ async function getDid(wallet_id = "awd") {
     }
 }
 
-async function deleteCredential(urn, wallet_id = "awd") {
+async function deleteCredential(urn) {
     const cookies = new Cookies();
     const { token } = cookies.get("session");
+    const wallet_id = await getWalletAdress();
+    if (!wallet_id) throw new Error('No wallet ID available');
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/credentials/${urn}`, {

@@ -65,7 +65,7 @@ const CardsOverview = () => {
                         <input
                             type="text"
                             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#383EDE] focus:border-transparent sm:text-sm"
-                            placeholder="Zoeken op issuer naam..."
+                            placeholder="Zoeken op naam..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
