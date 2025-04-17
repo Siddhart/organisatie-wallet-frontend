@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.bordered {
+  display: inline-block;
+  border: dashed 4px #383EDE;
+  border-style: dashed;
+  border-image-source: url("https://i.sstatic.net/wLdVc.png");
+  border-image-slice: 2;
+  border-image-repeat: round;
+  border-image: url("https://i.sstatic.net/wLdVc.png") 1 round;
+}
