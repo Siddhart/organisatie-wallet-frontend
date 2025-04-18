@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { HiPlus, HiSearch, HiFilter } from 'react-icons/hi'
+import { HiPlus, HiSearch } from 'react-icons/hi'
 
 //components
 import PageMessage from '@/components/global/PageMessage'
@@ -15,7 +15,6 @@ const CardsOverview = () => {
     const [search, setSearch] = useState("")
     const [isLoading, setIsLoading] = useState(true)
     const [addCredentialPopup, setAddCredentialPopup] = useState(false)
-    const [filter, setFilter] = useState('all')
 
     useEffect(() => {
         const fetchCards = async () => {
@@ -42,9 +41,7 @@ const CardsOverview = () => {
     }, [])
 
     const filteredCards = cards.filter(card => {
-        const matchesSearch = card?.parsedDocument?.issuer?.name?.toLowerCase()?.includes(search.toLowerCase())
-        const matchesFilter = filter === 'all' || card?.parsedDocument?.type[card?.parsedDocument?.type?.length - 1].toLowerCase() === filter.toLowerCase()
-        return matchesSearch && matchesFilter
+        return card?.parsedDocument?.issuer?.name?.toLowerCase()?.includes(search.toLowerCase())
     })
 
     return (
@@ -70,29 +67,13 @@ const CardsOverview = () => {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="relative">
-                            <select
-                                className="appearance-none bg-white border border-gray-300 rounded-lg pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#383EDE] focus:border-transparent"
-                                value={filter}
-                                onChange={(e) => setFilter(e.target.value)}
-                            >
-                                <option value="all">Alle Types</option>
-                                <option value="verification">Verification</option>
-                                <option value="credential">Credential</option>
-                            </select>
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                <HiFilter className="h-5 w-5 text-gray-400" />
-                            </div>
-                        </div>
-                        <button 
-                            onClick={() => setAddCredentialPopup(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-[#383EDE] text-white rounded-lg hover:bg-[#2e32b3] transition-colors"
-                        >
-                            <HiPlus className="w-5 h-5" />
-                            <span>Credential Toevoegen</span>
-                        </button>
-                    </div>
+                    <button 
+                        onClick={() => setAddCredentialPopup(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#383EDE] text-white rounded-lg hover:bg-[#2e32b3] transition-colors"
+                    >
+                        <HiPlus className="w-5 h-5" />
+                        <span>Credential Toevoegen</span>
+                    </button>
                 </div>
 
                 {isLoading ? (
@@ -100,9 +81,9 @@ const CardsOverview = () => {
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#383EDE]"></div>
                     </div>
                 ) : filteredCards.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg border border-gray-200">
+                    <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg">
                         <p className="text-lg font-medium text-gray-900">Geen credentials gevonden</p>
-                        <p className="text-sm text-gray-500 mt-1">Probeer een andere zoekterm of filter</p>
+                        <p className="text-sm text-gray-500 mt-1">Probeer een andere zoekterm</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

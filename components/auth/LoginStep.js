@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import QRCode from 'react-qr-code'
 
 //assets
 import CardsSvg from '@/assets/cardsSvg'
@@ -15,17 +16,15 @@ import { loginWithEmailAndPassword } from '@/helpers/auth'
 
 const LoginStep = ({ setStep }) => {
     const cookies = new Cookies(null, { path: '/' });
-
     const router = useRouter();
-    const [userName, setUserName] = useState("siddhartssg@gmail.com")
-    const [password, setPassword] = useState("Test123!")
+    const [showQR, setShowQR] = useState(false)
+    const userName = "siddhartssg@gmail.com"
+    const password = "Test123!"
 
     async function login() {
-        if (!userName || !password) return
-
         try {
             const data = await loginWithEmailAndPassword(userName, password);
-            
+
             if (data) {
                 const sessionData = JSON.stringify(data);
                 cookies.set("session", sessionData)
@@ -58,16 +57,14 @@ const LoginStep = ({ setStep }) => {
                     <div className='2xl:mt-16 mt-4 px-16 flex flex-col gap-8'>
                         <p className='font-bold text-4xl leading-snug'>Scan de QR-Code met de <br />NL-Wallet</p>
                         <p className='text-2xl leading-normal'>Open de NL-Wallet app en Scan de QR-Code met je persoonlijke wallet.</p>
-                        {/* <QRCode value={Math.random().toString()} /> */}
-                        <div className='flex flex-col gap-2'>
-                            <input value={userName} onChange={(e) => setUserName(e.target.value)} className='border-2 border-black w-64 px-2 py-1 rounded-md' placeholder='email' />
-                            <input value={password} onChange={(e) => setPassword(e.target.value)} className='border-2 border-black w-64 px-2 py-1 rounded-md' placeholder='password' />
-                        </div>
 
-                        <button onClick={login} className='bg-[#383EDE] flex flex-row w-fit h-fit gap-3 py-5 px-6 rounded-xl text-white'>
-                            <RightArrowSvg />
-                            <p className='font-bold text-base'>Inloggen</p>
-                        </button>
+                        <div onClick={() => login()} className='flex justify-center bg-black w-fit cursor-pointer'>
+                            <QRCode
+                                value="https://example.com/login"
+                                level="H"
+                                style={{ width: '200px', height: '200px' }}
+                            />
+                        </div>
                     </div>
 
                     <div className='absolute 2xl:bottom-16 bottom-4 left-16 flex flex-col gap-4'>

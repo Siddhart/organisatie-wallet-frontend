@@ -1,13 +1,53 @@
 import React from 'react'
-import { HiOutlineChevronRight, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
+import { useRouter } from 'next/router'
+import { HiChevronRight } from 'react-icons/hi'
 
 const UserRow = ({ user }) => {
+    const router = useRouter()
+
+    const handleClick = (e) => {
+        // Don't navigate if clicking action buttons
+        if (e.target.closest('button')) {
+            return
+        }
+        router.push(`/users/${user.id}`)
+    }
+
+    const getRoleColor = (role) => {
+        switch (role.toLowerCase()) {
+            case 'eigenaar':
+                return 'bg-blue-100 text-blue-800'
+            case 'developer':
+                return 'bg-purple-100 text-purple-800'
+            case 'hr':
+                return 'bg-green-100 text-green-800'
+            default:
+                return 'bg-gray-100 text-gray-800'
+        }
+    }
+
+    // Demo data for last login
+    const getLastLogin = () => {
+        const now = new Date()
+        const hours = now.getHours()
+        const minutes = now.getMinutes()
+        const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+        
+        const days = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag']
+        const day = days[now.getDay()]
+        
+        return `${day}, ${formattedTime}`
+    }
+
     return (
-        <tr className="hover:bg-gray-50 transition-colors">
+        <tr 
+            onClick={handleClick}
+            className="hover:bg-gray-50 cursor-pointer"
+        >
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-[#383EDE] flex items-center justify-center text-white font-semibold">
+                        <div className="h-10 w-10 rounded-lg bg-[#383EDE] flex items-center justify-center text-white font-semibold">
                             {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                         </div>
                     </div>
@@ -15,48 +55,33 @@ const UserRow = ({ user }) => {
                         <div className="text-sm font-medium text-gray-900">
                             {user.firstName} {user.lastName}
                         </div>
+                        <div className="text-sm text-gray-500">
+                            {user.email}
+                        </div>
                     </div>
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{user.email}</div>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
                     {user.role}
                 </span>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {user.lastLogin}
+                {getLastLogin()}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex items-center justify-end gap-2">
-                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                        <HiOutlinePencil className="w-5 h-5" />
-                    </button>
-                    <button className="text-gray-400 hover:text-red-600 transition-colors">
-                        <HiOutlineTrash className="w-5 h-5" />
-                    </button>
-                    <button className="text-gray-400 hover:text-[#383EDE] transition-colors">
-                        <HiOutlineChevronRight className="w-5 h-5" />
-                    </button>
-                </div>
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/users/${user.id}`)
+                    }}
+                    className="text-gray-400 hover:text-[#383EDE] transition-colors"
+                >
+                    <HiChevronRight className="h-5 w-5" />
+                </button>
             </td>
         </tr>
-    );
+    )
 }
-
-const getRoleColor = (role) => {
-    switch (role) {
-        case 'Eigenaar':
-            return 'bg-blue-100 text-blue-800';
-        case 'Developer':
-            return 'bg-purple-100 text-purple-800';
-        case 'HR':
-            return 'bg-red-100 text-red-800';
-        default:
-            return 'bg-gray-100 text-gray-800';
-    }
-};
 
 export default UserRow
