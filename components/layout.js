@@ -42,8 +42,8 @@ export default function Layout({ children }) {
     return (
         <div className="bg-[#F5F4F9] h-screen w-screen flex flex-row">
             <NavBar />
-            <main className="flex flex-1 w-full py-4 pr-4">
-                <div className='flex flex-1 w-full bg-white p-6 rounded-2xl overflow-hidden'>
+            <main className="flex flex-1 w-full md:py-4 md:pr-4">
+                <div className='flex flex-1 w-full bg-white p-4 md:p-6 md:rounded-2xl md:overflow-hidden'>
                     {children}
                 </div>
             </main>

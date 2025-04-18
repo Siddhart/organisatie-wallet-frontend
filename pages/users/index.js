@@ -7,10 +7,10 @@ import UserTable from '@/components/user-table/UserTable'
 import Tabs from '@/components/global/Tabs'
 
 const originalUsers = [
-  { firstName: 'Siddhart', lastName: 'Ghogli', email: 'siddhart.ghogli@kvk.nl', role: 'Eigenaar', lastLogin: 'Maandag 24 Februari, 23:10', status: 'approved' },
-  { firstName: 'John', lastName: 'Doe', email: 'john.doe@kvk.nl', role: 'Developer', lastLogin: 'Donderdag 20 Februari, 15:20', status: 'approved' },
-  { firstName: 'Jane', lastName: 'Doe', email: 'jane.doe@kvk.nl', role: 'HR', lastLogin: 'Zaterdag 22 Februari, 12:37', status: 'approved' },
-  { firstName: 'Pending', lastName: 'User', email: 'pending.user@kvk.nl', role: 'Developer', lastLogin: 'N/A', status: 'pending' },
+  { id: '1', firstName: 'Siddhart', lastName: 'Ghogli', email: 'siddhart.ghogli@kvk.nl', role: 'Eigenaar', lastLogin: 'Maandag 24 Februari, 23:10', status: 'approved' },
+  { id: '2', firstName: 'John', lastName: 'Doe', email: 'john.doe@kvk.nl', role: 'Developer', lastLogin: 'Donderdag 20 Februari, 15:20', status: 'approved' },
+  { id: '3', firstName: 'Jane', lastName: 'Doe', email: 'jane.doe@kvk.nl', role: 'HR', lastLogin: 'Zaterdag 22 Februari, 12:37', status: 'approved' },
+  { id: '4', firstName: 'Pending', lastName: 'User', email: 'pending.user@kvk.nl', role: 'Developer', lastLogin: 'N/A', status: 'pending' },
 ]; 
 
 const tabs = [
