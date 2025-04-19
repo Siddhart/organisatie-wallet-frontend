@@ -17,9 +17,52 @@ import { loginWithEmailAndPassword } from '@/helpers/auth'
 const LoginStep = ({ setStep }) => {
     const cookies = new Cookies(null, { path: '/' });
     const router = useRouter();
-    const [showQR, setShowQR] = useState(false)
+    const [sessionId, setSessionId] = useState(null);
+    const [sessionData, setSessionData] = useState(null);
     const userName = "siddhartssg@gmail.com"
     const password = "Test123!"
+
+    // Generate session ID when component mounts
+    useEffect(() => {
+        const generateSession = async () => {
+            try {
+                const response = await fetch('/api/qr/generate');
+                const data = await response.json();
+                setSessionId(data.sessionId);
+            } catch (error) {
+                console.error('Error generating session:', error);
+            }
+        };
+        generateSession();
+    }, []);
+
+    // Poll for session data
+    useEffect(() => {
+        if (!sessionId) return;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const response = await fetch(`/api/qr/session/${sessionId}`);
+                const data = await response.json();
+                
+                if (data && data.data) {
+                    setSessionData(data.data);
+                    clearInterval(pollInterval);
+                }
+            } catch (error) {
+                console.error('Error polling session:', error);
+            }
+        }, 2000); // Poll every 2 seconds
+
+        return () => clearInterval(pollInterval);
+    }, [sessionId]);
+
+    // Handle login when session data is received
+    useEffect(() => {
+        if (sessionData) {
+            login();
+        }
+    }, [sessionData]);
 
     async function login() {
         try {
@@ -58,12 +101,14 @@ const LoginStep = ({ setStep }) => {
                         <p className='font-bold text-4xl leading-snug'>Scan de QR-Code met de <br />NL-Wallet</p>
                         <p className='text-2xl leading-normal'>Open de NL-Wallet app en Scan de QR-Code met je persoonlijke wallet.</p>
 
-                        <div onClick={() => login()} className='flex justify-center bg-black w-fit cursor-pointer'>
-                            <QRCode
-                                value="https://example.com/login"
-                                level="H"
-                                style={{ width: '200px', height: '200px' }}
-                            />
+                        <div className='flex justify-center bg-black w-fit cursor-pointer'>
+                            {sessionId && (
+                                <QRCode
+                                    value={`${window.location.origin}/api/qr/session/${sessionId}`}
+                                    level="H"
+                                    style={{ width: '200px', height: '200px' }}
+                                />
+                            )}
                         </div>
                     </div>
 
