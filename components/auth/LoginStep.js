@@ -101,7 +101,7 @@ const LoginStep = ({ setStep }) => {
                         <p className='font-bold text-4xl leading-snug'>Scan de QR-Code met de <br />NL-Wallet</p>
                         <p className='text-2xl leading-normal'>Open de NL-Wallet app en Scan de QR-Code met je persoonlijke wallet.</p>
 
-                        <div className='flex justify-center bg-black w-fit cursor-pointer'>
+                        <div onClick={() => login()} className='flex justify-center bg-black w-fit cursor-pointer'>
                             {sessionId && (
                                 <QRCode
                                     value={`${window.location.origin}/api/qr/session/${sessionId}`}
