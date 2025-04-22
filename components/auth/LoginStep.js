@@ -34,7 +34,7 @@ const LoginStep = ({ setStep }) => {
             }
         };
         generateSession();
-    }, []);
+    }, []);2
 
     // Poll for session data
     useEffect(() => {
