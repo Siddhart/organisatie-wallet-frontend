@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         }
 
         // Fetch companies data from the companies endpoint
-        const companiesResponse = await fetch(`http://localhost:3001/api/issue/companies`);
+        const companiesResponse = await fetch(`https://businesswallet.eu/api/issue/companies`);
         if (!companiesResponse.ok) {
             throw new Error('Failed to fetch companies data');
         }
