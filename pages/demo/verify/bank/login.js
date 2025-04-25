@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import QRCode from 'react-qr-code';
 
 export default function BankLogin() {
   const router = useRouter();
@@ -27,13 +28,13 @@ export default function BankLogin() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100">
       <Head>
-        <title>Login - ING Bank Demo</title>
+        <title>Inloggen - GlobalBank Demo</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <header className="flex justify-between items-center px-8 py-4 bg-white shadow-sm">
         <div className="h-8">
-          <img src="/assets/logo-white.svg" alt="ING Logo" className="h-full" />
+          <img src="/assets/logo-white.svg" alt="GlobalBank Logo" className="h-full" />
         </div>
         <div className="space-x-2">
           <button className="px-2 py-1 text-gray-600 hover:text-[#ff6200]">NL</button>
@@ -48,8 +49,8 @@ export default function BankLogin() {
               {!showQRCode ? (
                 <>
                   <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to ING</h1>
-                    <p className="text-gray-600">Choose your preferred login method</p>
+                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Welkom bij GlobalBank</h1>
+                    <p className="text-gray-600">Kies uw inlogmethode</p>
                   </div>
 
                   <div className="space-y-6">
@@ -60,7 +61,7 @@ export default function BankLogin() {
                       className="w-full flex items-center justify-center gap-3 bg-[#383EDE] text-white py-4 rounded-xl hover:bg-[#2f33c0] transition-colors shadow-md"
                     >
                       <img src="/assets/logo-white.svg" className="h-6" alt="NL Wallet" />
-                      <span className="font-medium">Login with NL Wallet</span>
+                      <span className="font-medium">Inloggen met NL Wallet</span>
                     </button>
 
                     <div className="relative">
@@ -68,7 +69,7 @@ export default function BankLogin() {
                         <div className="w-full border-t border-gray-200"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-gray-500">or continue with</span>
+                        <span className="px-2 bg-white text-gray-500">of ga verder met</span>
                       </div>
                     </div>
 
@@ -76,7 +77,7 @@ export default function BankLogin() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div className="space-y-2">
                         <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                          Username
+                          Gebruikersnaam
                         </label>
                         <input
                           type="text"
@@ -85,13 +86,13 @@ export default function BankLogin() {
                           onChange={(e) => setUsername(e.target.value)}
                           required
                           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ff6200] focus:border-transparent"
-                          placeholder="Enter your username"
+                          placeholder="Voer uw gebruikersnaam in"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                          Password
+                          Wachtwoord
                         </label>
                         <input
                           type="password"
@@ -100,7 +101,7 @@ export default function BankLogin() {
                           onChange={(e) => setPassword(e.target.value)}
                           required
                           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ff6200] focus:border-transparent"
-                          placeholder="Enter your password"
+                          placeholder="Voer uw wachtwoord in"
                         />
                       </div>
 
@@ -114,11 +115,11 @@ export default function BankLogin() {
                             className="w-4 h-4 accent-[#ff6200] rounded"
                           />
                           <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
-                            Remember me
+                            Onthoud mijn gebruikersnaam
                           </label>
                         </div>
                         <a href="#" className="text-sm text-[#ff6200] hover:underline">
-                          Forgot password?
+                          Wachtwoord vergeten?
                         </a>
                       </div>
 
@@ -126,7 +127,7 @@ export default function BankLogin() {
                         type="submit"
                         className="w-full bg-[#ff6200] text-white py-4 rounded-xl hover:bg-[#e65800] transition-colors shadow-md"
                       >
-                        Sign in
+                        Inloggen
                       </button>
                     </form>
                   </div>
@@ -134,24 +135,26 @@ export default function BankLogin() {
               ) : (
                 <div className="text-center space-y-6">
                   <h2 className="text-2xl font-bold text-gray-800">Scan QR Code</h2>
-                  <p className="text-gray-600">Use your NL Wallet app to scan this QR code</p>
-                  
+                  <p className="text-gray-600">Gebruik uw NL Wallet app om deze QR code te scannen</p>
+
                   {/* QR Code Placeholder - Clickable */}
-                  <div 
+                  <div
                     onClick={handleQRCodeClick}
                     className="mx-auto w-64 h-64 bg-gray-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
                   >
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">📱</div>
-                      <p className="text-sm text-gray-500">Click to simulate scan</p>
-                    </div>
+                    <QRCode
+                      value={
+                        JSON.stringify({ "pn": "GlobalBank", "ep": `https://businesswallet.eu/api/qr/200`, "r": "Inloggen", "ra": [{ "n": "Persoonsgegevens", "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], "i": "https://businesswallet.eu/ro.png" },{ "n": "KVK Uitreksel", "a": ["KVK Nummer"], "i": "https://www.destartversneller.nl/wp-content/uploads/2019/01/kvk-logo.jpg" }], "pi": "https://businesswallet.eu/logo.png" })}
+                      level="L"
+                      style={{ width: '225px', height: '225px' }}
+                    />
                   </div>
 
                   <button
                     onClick={() => setShowQRCode(false)}
                     className="text-[#ff6200] hover:text-[#e65800] transition-colors"
                   >
-                    Back to login
+                    Terug naar inloggen
                   </button>
                 </div>
               )}
