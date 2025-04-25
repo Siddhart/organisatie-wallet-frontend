@@ -4,13 +4,14 @@ const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 async function getWalletAdress() {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) return null;
 
     try {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/accounts/wallets`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             }
         });
         const data = await response.json();
@@ -23,7 +24,9 @@ async function getWalletAdress() {
 
 async function getCredentials() {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) return [];
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) return [];
 
@@ -31,7 +34,7 @@ async function getCredentials() {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/credentials?showDeleted=false&showPending=false`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             }
         });
         const data = await response.json();
@@ -44,7 +47,9 @@ async function getCredentials() {
 
 async function getCredentialData(credential_id) {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) return null;
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) return null;
 
@@ -52,7 +57,7 @@ async function getCredentialData(credential_id) {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/credentials/${credential_id}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             }
         });
         const data = await response.json();
@@ -65,7 +70,9 @@ async function getCredentialData(credential_id) {
 
 async function resolveCredential(openIdCredentialOffer) {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) return null;
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) return null;
 
@@ -73,7 +80,7 @@ async function resolveCredential(openIdCredentialOffer) {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/exchange/resolveCredentialOffer`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             },
             body: openIdCredentialOffer
         });
@@ -87,7 +94,9 @@ async function resolveCredential(openIdCredentialOffer) {
 
 async function getIssuerMetadata(issuer) {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) return null;
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) return null;
 
@@ -95,7 +104,7 @@ async function getIssuerMetadata(issuer) {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/exchange/resolveIssuerOpenIDMetadata?issuer=${issuer}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             }
         });
         const data = await response.json();
@@ -108,7 +117,9 @@ async function getIssuerMetadata(issuer) {
 
 async function addCredential(did, openIdCredentialOffer) {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) throw new Error('No session token available');
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) throw new Error('No wallet ID available');
 
@@ -116,7 +127,7 @@ async function addCredential(did, openIdCredentialOffer) {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/exchange/useOfferRequest?did=${did}`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             },
             body: openIdCredentialOffer
         });
@@ -130,7 +141,9 @@ async function addCredential(did, openIdCredentialOffer) {
 
 async function getDid() {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) throw new Error('No session token available');
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) throw new Error('No wallet ID available');
 
@@ -138,7 +151,7 @@ async function getDid() {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/dids`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             }
         });
         const data = await response.json();
@@ -151,7 +164,9 @@ async function getDid() {
 
 async function deleteCredential(urn) {
     const cookies = new Cookies();
-    const { token } = cookies.get("session");
+    const session = cookies.get("session");
+    if (!session?.token) throw new Error('No session token available');
+    
     const wallet_id = await getWalletAdress();
     if (!wallet_id) throw new Error('No wallet ID available');
 
@@ -159,7 +174,7 @@ async function deleteCredential(urn) {
         const response = await fetch(`${NEXT_PUBLIC_API_HOST}/wallet-api/wallet/${wallet_id}/credentials/${urn}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${session.token}`,
             }
         });
         if (!response.ok) {

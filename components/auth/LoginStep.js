@@ -34,7 +34,7 @@ const LoginStep = ({ setStep }) => {
             }
         };
         generateSession();
-    }, []);
+    }, []); 2
 
     // Poll for session data
     useEffect(() => {
@@ -44,7 +44,7 @@ const LoginStep = ({ setStep }) => {
             try {
                 const response = await fetch(`/api/qr/session/${sessionId}`);
                 const data = await response.json();
-                
+
                 if (data && data.data) {
                     setSessionData(data.data);
                     clearInterval(pollInterval);
@@ -104,9 +104,10 @@ const LoginStep = ({ setStep }) => {
                         <div onClick={() => login()} className='flex justify-center bg-black w-fit cursor-pointer'>
                             {sessionId && (
                                 <QRCode
-                                    value={`${window.location.origin}/api/qr/session/${sessionId}`}
-                                    level="H"
-                                    style={{ width: '200px', height: '200px' }}
+                                    value={
+                                        JSON.stringify({ "pn": "BusinessWallet.eu", "ep": `${window.location.origin}/api/qr/session/${sessionId}`, "r": "Inloggen", "ra": [{ "n": "Persoonsgegevens", "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], "i": "https://businesswallet.eu/ro.png" }], "pi": "https://businesswallet.eu/logo.png" })}
+                                    level="L"
+                                    style={{ width: '225px', height: '225px' }}
                                 />
                             )}
                         </div>

@@ -7,35 +7,39 @@ import NavBar from "./navbar/NavBar";
 //packages
 import Cookies from 'universal-cookie';
 
+// Public routes that don't require authentication
+const publicRoutes = ['/auth', '/demo', '/onboarding'];
+
 export default function Layout({ children }) {
     const router = useRouter();
     const cookies = new Cookies();
-    const [isAuthPath, setIsAuthPath] = useState(false);
-    const [isDemoPath, setIsDemoPath] = useState(false);
+    const [isPublicPath, setIsPublicPath] = useState(false);
 
     useEffect(() => {
         if (!router.isReady) return;
-        setIsAuthPath(router.asPath.includes("/auth"));
-        setIsDemoPath(router.asPath.startsWith("/demo"));
+        setIsPublicPath(publicRoutes.some(route => router.asPath.startsWith(route)));
     }, [router.isReady, router.asPath]);
 
     useEffect(() => {
         const checkSession = () => {
             const session = cookies.get("session");
+            const isCurrentPathPublic = publicRoutes.some(route => router.asPath.startsWith(route));
+            
             if (session && router.asPath.includes("/auth")) {
                 window.location.href = "/";
-            } else if (!session && !router.asPath.includes("/auth") && !router.asPath.startsWith("/demo")) {
+            } else if (!session && !isCurrentPathPublic) {
                 router.push("/auth/login");
             }
         };
 
-        checkSession();
-        const interval = setInterval(checkSession, 500);
-
-        return () => clearInterval(interval);
+        if (router.isReady) {
+            checkSession();
+            const interval = setInterval(checkSession, 500);
+            return () => clearInterval(interval);
+        }
     }, [router, router.isReady]);
 
-    if (isAuthPath || isDemoPath) {
+    if (isPublicPath) {
         return <main>{children}</main>;
     }
 
