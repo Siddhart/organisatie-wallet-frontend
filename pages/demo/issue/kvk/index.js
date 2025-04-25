@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import QRCode from 'react-qr-code';
 
 const steps = [
   { id: 1, name: 'Bedrijf selecteren' },
@@ -39,7 +40,7 @@ const KVK = () => {
 
   const handleQRClick = async () => {
     if (!selectedBusiness) return;
-    
+
     setIsRequesting(true);
     try {
       const response = await fetch('/api/issue', {
@@ -54,11 +55,14 @@ const KVK = () => {
       });
 
       if (!response.ok) {
+        setCredentialOfferUrl({ type: "error", "message": "Je bent niet bevoegd voor dit bedrijf!" });
         throw new Error('Failed to get credential offer');
       }
 
       const data = await response.json();
-      setCredentialOfferUrl(data.credentialOfferUrl);
+      console.log(data);
+      
+      setCredentialOfferUrl({ type: "success", offer: data.credentialOfferUrl });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -66,7 +70,7 @@ const KVK = () => {
     }
   };
 
-  const filteredBusinesses = businesses.filter(business => 
+  const filteredBusinesses = businesses.filter(business =>
     business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     business.kvkNumber.includes(searchTerm)
   );
@@ -100,7 +104,7 @@ const KVK = () => {
           <div className="relative">
             {/* Progress Line */}
             <div className="absolute top-4 left-[60px] right-[60px] h-0.5 bg-gray-200">
-              <div 
+              <div
                 className="h-full bg-[#AA418C] transition-all duration-300 ease-in-out"
                 style={{ width: currentStep === 1 ? '0%' : '100%' }}
               />
@@ -113,8 +117,8 @@ const KVK = () => {
                   <div className={`
                     w-8 h-8 rounded-full flex items-center justify-center
                     transition-all duration-300 ease-in-out
-                    ${currentStep >= step.id 
-                      ? 'bg-[#AA418C] text-white' 
+                    ${currentStep >= step.id
+                      ? 'bg-[#AA418C] text-white'
                       : 'bg-white border-2 border-gray-300'
                     }
                   `}>
@@ -167,16 +171,15 @@ const KVK = () => {
                 {filteredBusinesses.map((business) => (
                   <div
                     key={business.kvkNumber}
-                    className={`p-6 border rounded-md cursor-pointer transition-colors ${
-                      selectedBusiness?.kvkNumber === business.kvkNumber
-                        ? 'border-[#AA418C] bg-[#AA418C]/5'
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
+                    className={`p-6 border rounded-md cursor-pointer transition-colors ${selectedBusiness?.kvkNumber === business.kvkNumber
+                      ? 'border-[#AA418C] bg-[#AA418C]/5'
+                      : 'border-gray-200 hover:bg-gray-50'
+                      }`}
                     onClick={() => setSelectedBusiness(business)}
                   >
                     <h3 className="text-lg font-medium text-[#AA418C] hover:underline mb-2">{business.name}</h3>
                     <p className="text-gray-700 mb-4">{business.description}</p>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <svg className="w-5 h-5 mt-0.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,9 +260,9 @@ const KVK = () => {
               </svg>
               Terug
             </button>
-            
+
             <h2 className="text-xl font-bold text-[#AA418C] mb-4">Scan deze QR code met je NL Wallet</h2>
-            <div 
+            <div
               className="inline-block p-4 bg-white rounded-lg shadow-md mb-8 cursor-pointer hover:shadow-lg transition-shadow"
               onClick={handleQRClick}
             >
@@ -267,18 +270,24 @@ const KVK = () => {
                 {isRequesting ? (
                   <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#AA418C] border-t-transparent"></div>
                 ) : (
-                  `QR Code for ${selectedBusiness.name}`
+                  <QRCode
+                    value={`${window.location.origin}/api/issue/`}
+                    level="H"
+                  />
                 )}
               </div>
             </div>
 
             {credentialOfferUrl && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                <p className="text-sm text-gray-600 break-all">{credentialOfferUrl}</p>
+              <div style={{
+                backgroundColor: credentialOfferUrl.type == "success" ? "#f9fafb" : "#fef2f2"
+              }} className="mt-4 p-4  rounded-md">
+                {credentialOfferUrl.credentialOfferUrl && <p className="text-sm text-gray-600 break-all">{credentialOfferUrl.offer}</p>}
+                {credentialOfferUrl.message && <p className="text-sm text-red-600 break-all">{credentialOfferUrl.message}</p>}
               </div>
             )}
 
-            <p className="text-gray-600 max-w-md mx-auto">
+            <p className="text-gray-600 max-w-md mx-auto mt-4">
               Wij kijken in het handelsregister of jij een geautoriseerde gebruiker bent. Als dit zo is wordt het KVK uittreksel naar uw wallet geïssued.
             </p>
           </div>
