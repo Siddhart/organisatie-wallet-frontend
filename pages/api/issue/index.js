@@ -21,12 +21,12 @@ export default async function handler(req, res) {
         const company = kvkData.find(comp => comp.kvkNumber === kvkNumber);
 
         if (!company) {
-            return res.status(404).json({ error: 'Company not found' });
+            return res.status(404).json({ type: "error", message: 'Company not found' });
         }
 
         // Check if BSN is authorized
         if (!company.authorized_users.includes(parseInt(bsnNumber))) {
-            return res.status(403).json({ error: 'User not authorized for this company' });
+            return res.status(403).json({ type: "error", message: 'User not authorized for this company' });
         }
 
         // Make request to issuer
@@ -98,19 +98,21 @@ export default async function handler(req, res) {
         });
 
         if (!issuerResponse.ok) {
-            return res.status(issuerResponse.status).json({ error: 'Issuer error', details: "Something went wrong!" });
+            return res.status(issuerResponse.status).json({ type: "error", message: "Something went wrong!" });
         }
 
         // Get the response text which contains the URL
         const credentialOfferUrl = await issuerResponse.text();
-        
+
         // Return the credential offer URL
-        return res.status(200).json({ 
+        return res.status(200).json({
+            type: "success",
             credentialOfferUrl,
+            message: "Successfully issued credential"
         });
 
     } catch (error) {
         console.error('Error processing request:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ type: "error", message: 'Internal server error' });
     }
 }
