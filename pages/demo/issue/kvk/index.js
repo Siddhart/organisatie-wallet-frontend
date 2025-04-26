@@ -4,6 +4,7 @@ import Image from 'next/image';
 import QRCode from 'react-qr-code';
 import { Copy } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { resolveCredential, addCredential, getDid } from '@/helpers/credentials';
 
 const steps = [
   { id: 1, name: 'Bedrijf selecteren' },
@@ -154,64 +155,122 @@ const BusinessCard = ({ business, isSelected, onSelect }) => (
 );
 
 // Credential Issue Component
-const CredentialIssue = ({ credentialOfferUrl, isRequesting, onQRClick, onCopy, onBack }) => (
-  <div className="text-center bg-white p-8 rounded-lg shadow-sm relative">
-    <button
-      onClick={onBack}
-      className="absolute left-4 top-4 text-[#AA418C] hover:text-[#AA418C]/80 flex items-center gap-2"
-    >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Terug
-    </button>
+const CredentialIssue = ({ credentialOfferUrl, isRequesting, onQRClick, onCopy, onBack }) => {
+  const [sessionId, setSessionId] = useState(null);
+  const [sessionData, setSessionData] = useState(null);
+  const [hasMadeRequest, setHasMadeRequest] = useState(false);
 
-    {!credentialOfferUrl && (
-      <div>
-        <h2 className="text-xl font-bold text-[#AA418C] mb-4">Scan deze QR code met je NL Wallet</h2>
-        <div
-          className="inline-block p-4 bg-white rounded-lg shadow-md mb-8 cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={onQRClick}
-        >
-          <div className="w-48 h-48 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
-            {isRequesting ? (
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#AA418C] border-t-transparent"></div>
-            ) : (
-              <QRCode
-                value={`${window.location.origin}/api/issue/`}
-                level="H"
-              />
-            )}
+  // Generate session when component mounts
+  useEffect(() => {
+    const generateSession = async () => {
+      try {
+        const response = await fetch('/api/qr/generate');
+        const data = await response.json();
+        setSessionId(data.sessionId);
+      } catch (error) {
+        console.error('Error generating session:', error);
+      }
+    };
+    generateSession();
+  }, []);
+
+  // Poll for session data
+  useEffect(() => {
+    if (!sessionId || hasMadeRequest) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/qr/session/${sessionId}`);
+        const data = await response.json();
+
+        if (data && data.data) {
+          setSessionData(data.data);
+          clearInterval(pollInterval);
+          // Make the issue request only if we haven't made it before
+          if (!hasMadeRequest) {
+            setHasMadeRequest(true);
+            onQRClick();
+          }
+        }
+      } catch (error) {
+        console.error('Error polling session:', error);
+      }
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [sessionId, onQRClick, hasMadeRequest]);
+
+  return (
+    <div className="text-center bg-white p-8 rounded-lg shadow-sm relative">
+      <button
+        onClick={onBack}
+        className="absolute left-4 top-4 text-[#AA418C] hover:text-[#AA418C]/80 flex items-center gap-2"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Terug
+      </button>
+
+      {!credentialOfferUrl && (
+        <div>
+          <h2 className="text-xl font-bold text-[#AA418C] mb-4">Scan deze QR code met je NL Wallet</h2>
+          <div
+            className="inline-block p-4 bg-white rounded-lg shadow-md mb-8 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={onQRClick}
+          >
+            <div className="w-48 h-48 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
+              {isRequesting ? (
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#AA418C] border-t-transparent"></div>
+              ) : sessionId ? (
+                <QRCode
+                  value={
+                    JSON.stringify({ 
+                      "pn": "Kamer van Koophandel", 
+                      "ep": `${window.location.origin}/api/qr/session/${sessionId}`, 
+                      "r": "KVK Uitreksel Opvragen", 
+                      "ra": [{ 
+                        "n": "Persoonsgegevens", 
+                        "a": ["BSN Nummer"], 
+                        "i": "https://businesswallet.eu/ro.png" 
+                      }], 
+                      "pi": "https://businesswallet.eu/kvk.jpg" 
+                    })
+                  }
+                  level="H"
+                />
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
-    <p className="text-gray-600 max-w-md mx-auto mt-4">
-      Wij kijken in het handelsregister of jij een geautoriseerde gebruiker bent. Als dit zo is wordt het KVK uittreksel naar uw wallet geïssued.
-    </p>
+      <p className="text-gray-600 max-w-md mx-auto mt-4">
+        Wij kijken in het handelsregister of jij een geautoriseerde gebruiker bent. Als dit zo is wordt het KVK uittreksel naar uw wallet geïssued.
+      </p>
 
-    {credentialOfferUrl && (
-      <div style={{
-        backgroundColor: credentialOfferUrl.type === "success" ? "#f9fafb" : "#fef2f2"
-      }} className="mt-4 rounded-md">
-        {credentialOfferUrl.type === "success" && (
-          <span className='flex flex-row gap-4'>
-            <p className="text-sm text-gray-600 break-all py-4 pl-4">{credentialOfferUrl.offer}</p>
-            <div onClick={onCopy} className='w-16 flex items-center justify-center hover:bg-gray-100 cursor-pointer rounded-r-md'>
-              <Copy className='w-4 h-full' />
-            </div>
-          </span>
-        )}
-        {credentialOfferUrl.message && (
-          <p className="text-sm text-red-600 break-all h-10 flex items-center justify-center">
-            {credentialOfferUrl.message}
-          </p>
-        )}
-      </div>
-    )}
-  </div>
-);
+      {credentialOfferUrl && (
+        <div style={{
+          backgroundColor: credentialOfferUrl.type === "success" ? "#d4ffdb" : "#fef2f2"
+        }} className="mt-4 rounded-md">
+          {credentialOfferUrl.type === "success" && (
+            <span className=''>
+              <p className="text-sm text-black break-all py-4 pl-4 text-center">Het KVK Uitreksel is succesvol toegevoegd aan uw Business Wallet.</p>
+              {/* <div onClick={onCopy} className='w-16 flex items-center justify-center hover:bg-gray-100 cursor-pointer rounded-r-md'>
+                <Copy className='w-4 h-full' />
+              </div> */}
+            </span>
+          )}
+          {credentialOfferUrl.message && (
+            <p className="text-sm text-red-600 break-all h-10 flex items-center justify-center">
+              {credentialOfferUrl.message}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Main Component
 const KVK = () => {
@@ -267,6 +326,21 @@ const KVK = () => {
 
       const data = await response.json();
       setCredentialOfferUrl({ type: "success", offer: data.credentialOfferUrl });
+
+      // Resolve and add the credential to the wallet
+      try {
+        const credentialDataOfferResponse = await resolveCredential(data.credentialOfferUrl);
+        const didData = await getDid();
+        const did = didData[0].did;
+
+        const res = await addCredential(did, data.credentialOfferUrl);
+        toast.success("KVK uittreksel succesvol toegevoegd aan uw Business Wallet", {
+          autoClose: 2000
+        });
+      } catch (error) {
+        console.error('Error adding credential:', error);
+        toast.error("Kon het KVK uittreksel niet toevoegen aan uw wallet. Probeer het opnieuw.");
+      }
     } catch (err) {
       console.error(err);
     } finally {

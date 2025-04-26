@@ -53,7 +53,7 @@ export default function DemoPage() {
     {
       title: 'Bank Login',
       description: 'Ervaar veilig inloggen bij uw bank met de NL Wallet. Deze demo simuleert het inloggen bij uw bankrekening met behulp van verifieerbare gegevens.',
-      onClick: () => router.push('/demo/verify/bank')
+      onClick: () => router.push('/demo/verify/bank/login')
     }
   ];
 
