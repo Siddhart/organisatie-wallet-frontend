@@ -7,6 +7,8 @@ const KeyValue = ({ title, value }) => {
       }).trim();
       
 
+      if(value == "string") return null
+
       return <div className='flex flex-col break-all'>
         <p className='text-sm break-all capitalize'>{formattedTitle}</p>
         <p className='text-base font-bold'>{value || "..."}</p>

@@ -14,7 +14,7 @@ const UserRow = ({ user }) => {
     }
 
     const getRoleColor = (role) => {
-        switch (role.toLowerCase()) {
+        switch (role?.toLowerCase()) {
             case 'eigenaar':
                 return 'bg-blue-100 text-blue-800'
             case 'developer':
@@ -53,7 +53,7 @@ const UserRow = ({ user }) => {
                     </div>
                     <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                            {user.firstName} {user.lastName}
+                            {user.firstName} {(user.voorvoegsel && user.voorvoegsel != "string") ? `${user.voorvoegsel} ` : ''}{user.lastName}
                         </div>
                         <div className="text-sm text-gray-500">
                             {user.email}

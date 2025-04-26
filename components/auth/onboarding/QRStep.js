@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import QRCode from 'react-qr-code'
 import { CheckCircle2 } from 'lucide-react'
+import { createUserFromPID } from '@/helpers/user'
 
 //assets
 import CardsSvg from '@/assets/cardsSvg'
@@ -32,44 +33,17 @@ const QRStep = ({ setStep }) => {
             try {
                 const response = await fetch(`/api/qr/session/${sessionId}`);
                 const data = await response.json();
+                console.log('Received session data:', data);
 
                 if (data && data.data) {
-                    // Extract relevant data from the response
-                    const attributes = data.data.data.attributes;
-                    const employeeData = {
-                        // Persoonlijke info
-                        FirstName: attributes.find(attr => attr.key === 'mock.firstNames')?.value.value,
-                        LastName: attributes.find(attr => attr.key === 'mock.lastName')?.value.value,
-                        BirthName: attributes.find(attr => attr.key === 'mock.birthName')?.value.value,
-                        Gender: attributes.find(attr => attr.key === 'mock.gender')?.value.value,
-                        BirthDate: attributes.find(attr => attr.key === 'mock.birthDate')?.value.value ? 
-                            new Date(attributes.find(attr => attr.key === 'mock.birthDate').value.value) : null,
-                        OlderThan18: attributes.find(attr => attr.key === 'mock.olderThan18')?.value.value === "true",
-                        BirthPlace: attributes.find(attr => attr.key === 'mock.birthPlace')?.value.value,
-                        BirthCountry: attributes.find(attr => attr.key === 'mock.birthCountry')?.value.value,
-                        Married: attributes.find(attr => attr.key === 'mock.hasSpouseOrPartner')?.value.value === "true",
-                        
-                        // Bedrijfsinfo
-                        LegalName: data.data.data.issuer.legalName.nl,
-                        Category: data.data.data.issuer.category.nl,
-                        City: data.data.data.issuer.city.nl,
-                        Kvk: data.data.data.issuer.kvk,
-                    };
-
-                    try{
-                        // await fetch('https://api.businesswallet.eu/api/', {
-                        //     method: 'POST',
-                        //     headers: {
-                        //         'Content-Type': 'application/json',
-                        //     },
-                        //     body: JSON.stringify(employeeData)
-                        // })
-    
-                        console.log('Extracted employee data:', employeeData);
+                    try {
+                        console.log('PID data structure:', data.data);
+                        // Create user with the PID data
+                        await createUserFromPID(data.data);
                         setIsSuccess(true);
                         clearInterval(pollInterval);
-                    }catch{
-
+                    } catch (error) {
+                        console.error('Error creating user:', error);
                     }
                 }
             } catch (error) {

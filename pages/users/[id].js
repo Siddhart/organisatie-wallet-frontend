@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { getUser } from '@/helpers/user'
 import KeyValue from '@/components/card-info/KeyValue'
 import CrossSvg from '@/assets/icons/CrossSvg'
 
@@ -9,44 +10,46 @@ const UserDetails = () => {
     const [activeTab, setActiveTab] = useState('general')
     const [user, setUser] = useState(null)
     const [selectedRole, setSelectedRole] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
 
-    // Temporary user data - should be replaced with API call
     useEffect(() => {
-        if (id) {
-            // Simulating API call
-            const userData = {
-                firstName: 'Siddhart',
-                lastName: 'Ghogli',
-                prefix: '',
-                email: 'siddhart.ghogli@kvk.nl',
-                role: 'Eigenaar',
-                lastLogin: 'Maandag 24 Februari, 23:10',
-                status: 'approved',
-                birthDate: '15-07-2004',
-                birthPlace: "'s-Gravenhage",
-                birthCountry: 'Nederland'
+        const fetchUser = async () => {
+            if (!id) return
+            
+            setIsLoading(true)
+            setError(null)
+            try {
+                const userData = await getUser(id)
+                setUser(userData)
+                setSelectedRole(userData.position)
+            } catch (err) {
+                setError('Er is een fout opgetreden bij het ophalen van de gebruiker.')
+                console.error('Error fetching user:', err)
+            } finally {
+                setIsLoading(false)
             }
-            setUser(userData)
-            setSelectedRole(userData.role)
         }
+
+        fetchUser()
     }, [id])
 
-    const getStatusText = (status) => {
-        switch (status) {
-            case 'approved':
+    const getStatusText = (verificationState) => {
+        switch (verificationState) {
+            case 1:
                 return 'Goedgekeurd';
-            case 'pending':
+            case 0:
                 return 'In afwachting';
             default:
-                return status;
+                return 'Onbekend';
         }
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'approved':
+    const getStatusColor = (verificationState) => {
+        switch (verificationState) {
+            case 1:
                 return 'bg-green-100 text-green-800';
-            case 'pending':
+            case 0:
                 return 'bg-yellow-100 text-yellow-800';
             default:
                 return 'bg-gray-100 text-gray-800';
@@ -63,6 +66,8 @@ const UserDetails = () => {
     ];
 
     const renderTabContent = () => {
+        if (!user) return null;
+
         switch (activeTab) {
             case 'general':
                 return (
@@ -71,19 +76,41 @@ const UserDetails = () => {
                             <h2 className="text-lg font-semibold text-[#445581] mb-4">Persoonlijke Informatie</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="flex flex-col gap-3">
-                                    <KeyValue title="Volledige naam" value={`${user.firstName} ${user.lastName}`} />
-                                    <KeyValue title="Voorletters" value={user.firstName.split(' ').map(n => n[0]).join('.')} />
-                                    <KeyValue title="Voornamen" value={user.firstName} />
-                                    <KeyValue title="Voorvoegsel" value={user.prefix || '-'} />
-                                    <KeyValue title="Achternaam" value={user.lastName} />
-                                    <KeyValue title="E-mail" value={user.email} />
-                                    <KeyValue title="Laatste aanmelding" value={user.lastLogin} />
+                                    <KeyValue 
+                                        title="Volledige naam" 
+                                        value={`${user.firstName} ${user.voorvoegsel && user.voorvoegsel !== "string" ? `${user.voorvoegsel} ` : ''}${user.lastName}`} 
+                                    />
+                                    <KeyValue 
+                                        title="Voorletters" 
+                                        value={user.voorletters ? `${user.voorletters.split("").join(".")}.` : '-'} 
+                                    />
+                                    <KeyValue 
+                                        title="Voornamen" 
+                                        value={user.firstName} 
+                                    />
+                                    <KeyValue 
+                                        title="Tussenvoegsel" 
+                                        value={user.voorvoegsel || '-'} 
+                                    />
+                                    <KeyValue 
+                                        title="Achternaam" 
+                                        value={user.lastName} 
+                                    />
+                                    <KeyValue 
+                                        title="E-mail" 
+                                        value={user.email} 
+                                    />
+                                    <KeyValue 
+                                        title="Laatste aanmelding" 
+                                        value={new Date(user.laatsteAanmelding).toLocaleString('nl-NL')} 
+                                    />
                                 </div>
                                 <div className="flex flex-col gap-3">
-                                    <KeyValue title="Geslachtsnaam" value={user.lastName} />
-                                    <KeyValue title="Geboortedatum" value={user.birthDate || '-'} />
+                                    <KeyValue title="Geslacht" value={user.gender || '-'} />
+                                    <KeyValue title="Geboortedatum" value={new Date(user.birthDate).toLocaleDateString('nl-NL')} />
                                     <KeyValue title="Geboorteplaats" value={user.birthPlace || '-'} />
                                     <KeyValue title="Geboorteland" value={user.birthCountry || '-'} />
+                                    <KeyValue title="Telefoonnummer" value={user.phoneNumber || '-'} />
                                 </div>
                             </div>
                         </div>
@@ -138,18 +165,9 @@ const UserDetails = () => {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <h3 className="font-semibold text-[#445581]">Inloggen</h3>
-                                            <p className="text-sm text-gray-600 mt-1">Laatste inlog: {user.lastLogin}</p>
+                                            <p className="text-sm text-gray-600 mt-1">Laatste inlog: {new Date(user.laatsteAanmelding).toLocaleString('nl-NL')}</p>
                                         </div>
                                         <span className="text-sm text-gray-500">Vandaag</span>
-                                    </div>
-                                </div>
-                                <div className="p-4 rounded-lg border border-gray-200">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-semibold text-[#445581]">Rol gewijzigd</h3>
-                                            <p className="text-sm text-gray-600 mt-1">Rol gewijzigd naar: {user.role}</p>
-                                        </div>
-                                        <span className="text-sm text-gray-500">1 dag geleden</span>
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-lg border border-gray-200">
@@ -158,7 +176,7 @@ const UserDetails = () => {
                                             <h3 className="font-semibold text-[#445581]">Account aangemaakt</h3>
                                             <p className="text-sm text-gray-600 mt-1">Account succesvol aangemaakt</p>
                                         </div>
-                                        <span className="text-sm text-gray-500">1 week geleden</span>
+                                        <span className="text-sm text-gray-500">{new Date(user.createdAt).toLocaleDateString('nl-NL')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +192,7 @@ const UserDetails = () => {
                                 <p className="text-sm text-red-600">Deze acties kunnen niet ongedaan worden gemaakt.</p>
                             </div>
                             <div className="flex flex-col gap-4">
-                                {user.status === 'pending' && (
+                                {user.verificationState === 0 && (
                                     <button className="w-fit bg-[#383EDE] text-white py-2 px-4 rounded-lg hover:bg-[#2E32B8] transition-colors flex items-center justify-center gap-2">
                                         <span className="font-bold">Gebruiker verifiëren</span>
                                     </button>
@@ -192,10 +210,26 @@ const UserDetails = () => {
         }
     };
 
+    if (isLoading) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#383EDE]"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center">
+                <div className="text-red-500 text-center">{error}</div>
+            </div>
+        );
+    }
+
     if (!user) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#383EDE]"></div>
+            <div className="fixed inset-0 flex items-center justify-center">
+                <div className="text-gray-500 text-center">Gebruiker niet gevonden</div>
             </div>
         );
     }
@@ -215,8 +249,8 @@ const UserDetails = () => {
                             <p className="text-sm text-gray-600">{user.email}</p>
                         </div>
                     </div>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                        {getStatusText(user.status)}
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.verificationState)}`}>
+                        {getStatusText(user.verificationState)}
                     </span>
                 </div>
             </div>
