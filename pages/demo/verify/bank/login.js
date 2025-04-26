@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import QRCode from 'react-qr-code';
@@ -10,6 +10,8 @@ export default function BankLogin() {
   const [password, setPassword] = useState('');
   const [rememberUsername, setRememberUsername] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [sessionData, setSessionData] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,9 +23,47 @@ export default function BankLogin() {
   };
 
   const handleQRCodeClick = () => {
-    // Redirect to hypothetical banking dashboard
     router.push('/demo/verify/bank/dashboard');
   };
+
+  // Generate session when QR code is shown
+  useEffect(() => {
+    if (showQRCode) {
+      const generateSession = async () => {
+        try {
+          const response = await fetch('/api/qr/generate');
+          const data = await response.json();
+          setSessionId(data.sessionId);
+        } catch (error) {
+          console.error('Error generating session:', error);
+        }
+      };
+      generateSession();
+    }
+  }, [showQRCode]);
+
+  // Poll for session data
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/qr/session/${sessionId}`);
+        const data = await response.json();
+
+        if (data && data.data) {
+          setSessionData(data.data);
+          clearInterval(pollInterval);
+          // Redirect to dashboard when session data is received
+          router.push('/demo/verify/bank/dashboard');
+        }
+      } catch (error) {
+        console.error('Error polling session:', error);
+      }
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [sessionId, router]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100">
@@ -61,7 +101,7 @@ export default function BankLogin() {
                       className="w-full flex items-center justify-center gap-3 bg-[#383EDE] text-white py-4 rounded-xl hover:bg-[#2f33c0] transition-colors shadow-md"
                     >
                       <img src="/assets/logo-white.svg" className="h-6" alt="NL Wallet" />
-                      <span className="font-medium">Inloggen met NL Wallet</span>
+                      <span className="font-medium">Login met NL Business Wallet</span>
                     </button>
 
                     <div className="relative">
@@ -138,16 +178,36 @@ export default function BankLogin() {
                   <p className="text-gray-600">Gebruik uw NL Wallet app om deze QR code te scannen</p>
 
                   {/* QR Code Placeholder - Clickable */}
-                  <div
+                  <div 
                     onClick={handleQRCodeClick}
                     className="mx-auto w-64 h-64 bg-gray-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
                   >
-                    <QRCode
-                      value={
-                        JSON.stringify({ "pn": "GlobalBank", "ep": `https://businesswallet.eu/api/qr/200`, "r": "Inloggen", "ra": [{ "n": "Persoonsgegevens", "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], "i": "https://businesswallet.eu/ro.png" },{ "n": "KVK Uitreksel", "a": ["KVK Nummer"], "i": "https://www.destartversneller.nl/wp-content/uploads/2019/01/kvk-logo.jpg" }], "pi": "https://businesswallet.eu/logo.png" })}
-                      level="L"
-                      style={{ width: '225px', height: '225px' }}
-                    />
+                    {sessionId && (
+                      <QRCode
+                        value={
+                          JSON.stringify({ 
+                            "pn": "GlobalBank", 
+                            "ep": `${window.location.origin}/api/qr/session/${sessionId}`, 
+                            "r": "Inloggen", 
+                            "ra": [
+                              { 
+                                "n": "Persoonsgegevens", 
+                                "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], 
+                                "i": "https://businesswallet.eu/ro.png" 
+                              },
+                              { 
+                                "n": "KVK Uitreksel", 
+                                "a": ["KVK Nummer"], 
+                                "i": "https://businesswallet.eu/kvk.jpg" 
+                              }
+                            ], 
+                            "pi": "https://businesswallet.eu/logo.png" 
+                          })
+                        }
+                        level="L"
+                        style={{ width: '225px', height: '225px' }}
+                      />
+                    )}
                   </div>
 
                   <button
