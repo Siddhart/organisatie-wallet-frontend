@@ -18,7 +18,7 @@ const WelcomeStep = ({ setStep }) => {
             <div className='flex flex-row h-full w-full flex-1'>
                 <div className='flex flex-col gap-8 h-full w-[58%] items-center justify-center'>
                     <CardsSvg />
-                    <p className='w-1/2 text-center text-2xl'>Deel Eenvoudig en Snel bedrijfsgegevens met andere partijen!.</p>
+                    <p className='w-1/2 text-center text-2xl'>Deel Eenvoudig en Snel bedrijfsgegevens met andere partijen!</p>
                 </div>
 
                 <div className='flex flex-col relative h-full w-auto flex-1 bg-white rounded-l-[32px]'>
