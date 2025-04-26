@@ -6,9 +6,10 @@ const KeyValue = ({ title, value }) => {
         return prevChar === prevChar.toLowerCase() ? ` ${p1}` : p1;
       }).trim();
       
+
       return <div className='flex flex-col break-all'>
         <p className='text-sm break-all capitalize'>{formattedTitle}</p>
-        <p className='text-base font-bold'>{value}</p>
+        <p className='text-base font-bold'>{value || "..."}</p>
       </div>
 }
 
