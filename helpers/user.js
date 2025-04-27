@@ -52,9 +52,8 @@ const createUser = async (userData) => {
 
 const createUserFromPID = async (pidData) => {
     try {
-        const attributes = pidData.data.attributes;
-        const firstName = attributes.find(attr => attr.key === 'mock.firstNames')?.value.value || '';
-        const lastName = attributes.find(attr => attr.key === 'mock.lastName')?.value.value || '';
+        const firstName = pidData.attributes.find(attr => attr.key === 'mock.firstNames')?.value.value || '';
+        const lastName = pidData.attributes.find(attr => attr.key === 'mock.lastName')?.value.value || '';
         
         // Extract voorletters from first names
         const voorletters = firstName
@@ -80,17 +79,17 @@ const createUserFromPID = async (pidData) => {
             lastName: cleanLastName,
             voorvoegsel: voorvoegsel,
             voorletters: voorletters,
-            birthName: attributes.find(attr => attr.key === 'mock.birthName')?.value.value || '',
-            gender: attributes.find(attr => attr.key === 'mock.gender')?.value.value || '',
-            birthDate: new Date(attributes.find(attr => attr.key === 'mock.birthDate')?.value.value).toISOString(),
-            olderThan18: attributes.find(attr => attr.key === 'mock.olderThan18')?.value.value === 'true',
-            birthPlace: attributes.find(attr => attr.key === 'mock.birthPlace')?.value.value || '',
-            birthCountry: attributes.find(attr => attr.key === 'mock.birthCountry')?.value.value || '',
-            married: attributes.find(attr => attr.key === 'mock.hasSpouseOrPartner')?.value.value === 'true',
-            legalName: pidData.data.issuer.legalName.nl || '',
-            category: pidData.data.issuer.category.nl || '',
-            city: pidData.data.issuer.city.nl || '',
-            kvk: pidData.data.issuer.kvk || '',
+            birthName: pidData.attributes.find(attr => attr.key === 'mock.birthName')?.value.value || '',
+            gender: pidData.attributes.find(attr => attr.key === 'mock.gender')?.value.value || '',
+            birthDate: new Date(pidData.attributes.find(attr => attr.key === 'mock.birthDate')?.value.value).toISOString(),
+            olderThan18: pidData.attributes.find(attr => attr.key === 'mock.olderThan18')?.value.value === 'true',
+            birthPlace: pidData.attributes.find(attr => attr.key === 'mock.birthPlace')?.value.value || '',
+            birthCountry: pidData.attributes.find(attr => attr.key === 'mock.birthCountry')?.value.value || '',
+            married: pidData.attributes.find(attr => attr.key === 'mock.hasSpouseOrPartner')?.value.value === 'true',
+            legalName: pidData.issuer.legalName.nl || '',
+            category: pidData.issuer.category.nl || '',
+            city: pidData.issuer.city.nl || '',
+            kvk: pidData.issuer.kvk || '',
             verificationState: 0,
             employeeState: 0,
             //mock data
