@@ -37,9 +37,11 @@ const UsersOverview = () => {
           )
         }
 
+        console.log(filteredUsers);
+        
         // Filter by tab
         if (activeTab === 'all') {
-          filteredUsers = filteredUsers.filter(user => user.verificationState === 1)
+          filteredUsers = filteredUsers.filter(user => user.verificationState === 2)
         } else if (activeTab === 'pending') {
           filteredUsers = filteredUsers.filter(user => user.verificationState === 0)
         }

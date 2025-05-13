@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { getUser } from '@/helpers/user'
+import { getUser, updateUserVerification, updateEmployeeState } from '@/helpers/user'
 import KeyValue from '@/components/card-info/KeyValue'
 import CrossSvg from '@/assets/icons/CrossSvg'
 
@@ -12,6 +12,8 @@ const UserDetails = () => {
     const [selectedRole, setSelectedRole] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [isVerifying, setIsVerifying] = useState(false)
+    const [isUpdatingState, setIsUpdatingState] = useState(false)
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -34,26 +36,78 @@ const UserDetails = () => {
         fetchUser()
     }, [id])
 
-    const getStatusText = (verificationState) => {
-        switch (verificationState) {
-            case 1:
-                return 'Goedgekeurd';
-            case 0:
-                return 'In afwachting';
-            default:
-                return 'Onbekend';
+    const handleVerify = async () => {
+        if (!id) return;
+        
+        setIsVerifying(true);
+        try {
+            // Update both verification state and employee state
+            await updateUserVerification(id, 2); // Verified = 2
+            await updateEmployeeState(id, 1); // Active = 1
+            // Refresh the page data
+            const userData = await getUser(id);
+            setUser(userData);
+        } catch (err) {
+            setError('Er is een fout opgetreden bij het verifiëren van de gebruiker.');
+            console.error('Error verifying user:', err);
+        } finally {
+            setIsVerifying(false);
         }
     };
 
-    const getStatusColor = (verificationState) => {
-        switch (verificationState) {
-            case 1:
-                return 'bg-green-100 text-green-800';
-            case 0:
-                return 'bg-yellow-100 text-yellow-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
+    const handleEmployeeStateChange = async (value) => {
+        if (!id) return;
+        
+        setIsUpdatingState(true);
+        try {
+            await updateEmployeeState(id, parseInt(value));
+            // Refresh the page data
+            const userData = await getUser(id);
+            setUser(userData);
+        } catch (err) {
+            setError('Er is een fout opgetreden bij het bijwerken van de status.');
+            console.error('Error updating employee state:', err);
+        } finally {
+            setIsUpdatingState(false);
         }
+    };
+
+    const getStatusText = (verificationState, employeeState) => {
+        if (verificationState === 0) return 'In afwachting';
+        if (verificationState === 1) return 'In behandeling';
+        if (verificationState === 2) {
+            switch (employeeState) {
+                case 0: return 'Inactief';
+                case 1: return 'Actief';
+                case 2: return 'Met verlof';
+                case 3: return 'Geschorst';
+                case 4: return 'Beëindigd';
+                case 5: return 'Gepensioneerd';
+                default: return 'Onbekend';
+            }
+        }
+        if (verificationState === 3) return 'Verlopen';
+        if (verificationState === 4) return 'Ingetrokken';
+        return 'Onbekend';
+    };
+
+    const getStatusColor = (verificationState, employeeState) => {
+        if (verificationState === 0) return 'bg-yellow-100 text-yellow-800';
+        if (verificationState === 1) return 'bg-blue-100 text-blue-800';
+        if (verificationState === 2) {
+            switch (employeeState) {
+                case 0: return 'bg-red-100 text-red-800';
+                case 1: return 'bg-green-100 text-green-800';
+                case 2: return 'bg-purple-100 text-purple-800';
+                case 3: return 'bg-orange-100 text-orange-800';
+                case 4: return 'bg-gray-100 text-gray-800';
+                case 5: return 'bg-gray-100 text-gray-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+        if (verificationState === 3) return 'bg-red-100 text-red-800';
+        if (verificationState === 4) return 'bg-red-100 text-red-800';
+        return 'bg-gray-100 text-gray-800';
     };
 
     const roles = [
@@ -188,19 +242,74 @@ const UserDetails = () => {
                     <div className="flex flex-col gap-6">
                         <div className="bg-white">
                             <h2 className="text-lg font-semibold text-red-800 mb-4">Gevaarlijke Acties</h2>
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                                <p className="text-sm text-red-600">Deze acties kunnen niet ongedaan worden gemaakt.</p>
-                            </div>
-                            <div className="flex flex-col gap-4">
+
+                            <div className="space-y-6">
+                                {/* Verificatie Sectie */}
                                 {user.verificationState === 0 && (
-                                    <button className="w-fit bg-[#383EDE] text-white py-2 px-4 rounded-lg hover:bg-[#2E32B8] transition-colors flex items-center justify-center gap-2">
-                                        <span className="font-bold">Gebruiker verifiëren</span>
-                                    </button>
+                                    <div className="border border-gray-200 rounded-lg p-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h3 className="font-semibold text-[#445581]">Gebruiker Verifiëren</h3>
+                                                <p className="text-sm text-gray-600 mt-1">Geef deze gebruiker toegang tot het systeem</p>
+                                            </div>
+                                            <button 
+                                                onClick={handleVerify}
+                                                disabled={isVerifying}
+                                                className={`bg-[#383EDE] text-white py-2 px-4 rounded-lg transition-colors ${
+                                                    isVerifying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2E32B8]'
+                                                }`}
+                                            >
+                                                {isVerifying ? 'Verifiëren...' : 'Verifiëren'}
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
-                                <button className="w-fit bg-[#AB0065] text-white py-2 px-4 rounded-lg hover:bg-[#900055] transition-colors flex items-center justify-center gap-2">
-                                    <span className="font-bold">Gebruiker verwijderen</span>
-                                    <CrossSvg color="white" />
-                                </button>
+
+                                {/* Employee State Section */}
+                                {user.verificationState === 2 && (
+                                    <div className="border border-gray-200 rounded-lg p-4">
+                                        <div className="flex flex-col gap-4">
+                                            <div>
+                                                <h3 className="font-semibold text-[#445581] mb-2">Medewerker Status</h3>
+                                                <div className="relative">
+                                                    <select
+                                                        value={user.employeeState}
+                                                        onChange={(e) => handleEmployeeStateChange(e.target.value)}
+                                                        disabled={isUpdatingState}
+                                                        className="w-full p-3 pr-10 appearance-none bg-white border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#383EDE] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    >
+                                                        <option value="0" className="py-2">Inactief</option>
+                                                        <option value="1" className="py-2">Actief</option>
+                                                        <option value="2" className="py-2">Met verlof</option>
+                                                        <option value="3" className="py-2">Geschorst</option>
+                                                        <option value="4" className="py-2">Beëindigd</option>
+                                                        <option value="5" className="py-2">Gepensioneerd</option>
+                                                    </select>
+                                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Verwijderen Sectie */}
+                                <div className="border border-red-200 rounded-lg p-4 bg-red-50">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-semibold text-red-800">Gebruiker Verwijderen</h3>
+                                            <p className="text-sm text-red-600 mt-1">Verwijder deze gebruiker permanent uit het systeem</p>
+                                        </div>
+                                        <button className="bg-[#AB0065] text-white py-2 px-4 rounded-lg hover:bg-[#900055] transition-colors flex items-center gap-2">
+                                            <span>Verwijderen</span>
+                                            <CrossSvg color="white" />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -249,8 +358,8 @@ const UserDetails = () => {
                             <p className="text-sm text-gray-600">{user.email}</p>
                         </div>
                     </div>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.verificationState)}`}>
-                        {getStatusText(user.verificationState)}
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.verificationState, user.employeeState)}`}>
+                        {getStatusText(user.verificationState, user.employeeState)}
                     </span>
                 </div>
             </div>
