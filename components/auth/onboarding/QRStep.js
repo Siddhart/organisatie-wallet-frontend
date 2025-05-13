@@ -37,8 +37,8 @@ const QRStep = ({ setStep }) => {
                 const data = await response.json();
                 console.log('Received session data:', data);
 
-                if (data && data.data && data.data.data) {
-                    setPidData(data.data.data);
+                if (data && data.data) {
+                    setPidData(data.data);
                     setShowConfirmation(true);
                     clearInterval(pollInterval);
                 }
