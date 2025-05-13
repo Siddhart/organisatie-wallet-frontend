@@ -120,4 +120,46 @@ const createUserFromPID = async (pidData) => {
     }
 }
 
-export { getUsers, getUser, createUser, createUserFromPID }
+const updateUserVerification = async (id, verificationState) => {
+    try {
+        const response = await fetch(`${baseURL}/Employee/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ verificationState })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to update user verification');
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error updating user verification:', error);
+        throw error;
+    }
+}
+
+const updateEmployeeState = async (id, employeeState) => {
+    try {
+        const response = await fetch(`${baseURL}/Employee/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ employeeState })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to update employee state');
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error updating employee state:', error);
+        throw error;
+    }
+}
+
+export { getUsers, getUser, createUser, createUserFromPID, updateUserVerification, updateEmployeeState }

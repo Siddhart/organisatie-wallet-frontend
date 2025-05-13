@@ -26,6 +26,34 @@ const UserRow = ({ user }) => {
         }
     }
 
+    const getEmployeeStateText = (state, verificationState) => {
+        if (verificationState === 0) return 'In Afwachting';
+        
+        switch (state) {
+            case 0: return 'Inactief'
+            case 1: return 'Actief'
+            case 2: return 'Met verlof'
+            case 3: return 'Geschorst'
+            case 4: return 'Beëindigd'
+            case 5: return 'Gepensioneerd'
+            default: return 'Onbekend'
+        }
+    }
+
+    const getEmployeeStateColor = (state, verificationState) => {
+        if (verificationState === 0) return 'bg-yellow-100 text-yellow-800';
+        
+        switch (state) {
+            case 0: return 'bg-red-100 text-red-800'
+            case 1: return 'bg-green-100 text-green-800'
+            case 2: return 'bg-purple-100 text-purple-800'
+            case 3: return 'bg-orange-100 text-orange-800'
+            case 4: return 'bg-gray-100 text-gray-800'
+            case 5: return 'bg-gray-100 text-gray-800'
+            default: return 'bg-gray-100 text-gray-800'
+        }
+    }
+
     // Demo data for last login
     const getLastLogin = () => {
         const now = new Date()
@@ -64,6 +92,11 @@ const UserRow = ({ user }) => {
             <td className="px-6 py-4 whitespace-nowrap">
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
                     {user.role}
+                </span>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEmployeeStateColor(user.employeeState, user.verificationState)}`}>
+                    {getEmployeeStateText(user.employeeState, user.verificationState)}
                 </span>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
