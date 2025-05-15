@@ -166,10 +166,10 @@ const DocumentSigningDemo = () => {
                                 {
                                   "n": "KVK Uitreksel",
                                   "a": ["Bedrijfsnaam", "Bedrijfsadres", "KVK Nummer", "IBAN", "Email", "Telefoonnummer"],
-                                  "i": "https://businesswallet.eu/kvk.jpg"
+                                  "i": "https://businesswallets.eu/kvk.jpg"
                                 }
                               ],
-                              "pi": "https://businesswallet.eu/logo.png"
+                              "pi": "https://businesswallets.eu/logo.png"
                             })}
                             level="H"
                           />

@@ -232,9 +232,9 @@ const CredentialIssue = ({ credentialOfferUrl, isRequesting, onQRClick, onCopy, 
                       "ra": [{ 
                         "n": "Persoonsgegevens", 
                         "a": ["BSN Nummer"], 
-                        "i": "https://businesswallet.eu/ro.png" 
+                        "i": "https://businesswallets.eu/ro.png" 
                       }], 
-                      "pi": "https://businesswallet.eu/kvk.jpg" 
+                      "pi": "https://businesswallets.eu/kvk.jpg" 
                     })
                   }
                   level="H"

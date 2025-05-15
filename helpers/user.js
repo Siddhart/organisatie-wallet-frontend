@@ -1,4 +1,4 @@
-const baseURL = "https://api.businesswallet.eu/api"
+const baseURL = "https://api.businesswallets.eu/api"
 
 const getUsers = async () => {
     try {

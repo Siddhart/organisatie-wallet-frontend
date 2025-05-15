@@ -105,7 +105,7 @@ const LoginStep = ({ setStep }) => {
                             {sessionId && (
                                 <QRCode
                                     value={
-                                        JSON.stringify({ "pn": "BusinessWallet.eu", "ep": `${window.location.origin}/api/qr/session/${sessionId}`, "r": "Inloggen", "ra": [{ "n": "Persoonsgegevens", "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], "i": "https://businesswallet.eu/ro.png" }], "pi": "https://businesswallet.eu/logo.png" })}
+                                        JSON.stringify({ "pn": "BusinessWallets.eu", "ep": `${window.location.origin}/api/qr/session/${sessionId}`, "r": "Inloggen", "ra": [{ "n": "Persoonsgegevens", "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], "i": "https://businesswallets.eu/ro.png" }], "pi": "https://businesswallets.eu/logo.png" })}
                                     level="L"
                                     style={{ width: '225px', height: '225px' }}
                                 />

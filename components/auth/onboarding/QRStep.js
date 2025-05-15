@@ -206,7 +206,7 @@ const QRStep = ({ setStep }) => {
                                             "ra": [{ 
                                                 "n": "Persoonsgegevens", 
                                                 "a": ["Voornaam", "Achternaam", "Geboortedatum", "Geboorteplaats", "Geboorteland", "BSN"], 
-                                                "i": "https://businesswallet.eu/ro.png" 
+                                                "i": "https://businesswallets.eu/ro.png" 
                                             }], 
                                             "pi": "https://websloth.agency/logo.png" 
                                         })
