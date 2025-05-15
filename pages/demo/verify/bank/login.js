@@ -193,15 +193,15 @@ export default function BankLogin() {
                               { 
                                 "n": "Persoonsgegevens", 
                                 "a": ["Voornaam", "Achternaam", "Geboortedatum", "BSN Nummer"], 
-                                "i": "https://businesswallet.eu/ro.png" 
+                                "i": "https://businesswallets.eu/ro.png" 
                               },
                               { 
                                 "n": "KVK Uitreksel", 
                                 "a": ["KVK Nummer"], 
-                                "i": "https://businesswallet.eu/kvk.jpg" 
+                                "i": "https://businesswallets.eu/kvk.jpg" 
                               }
                             ], 
-                            "pi": "https://businesswallet.eu/logo.png" 
+                            "pi": "https://businesswallets.eu/logo.png" 
                           })
                         }
                         level="L"

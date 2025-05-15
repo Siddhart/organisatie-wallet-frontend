@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         }
 
         // Fetch companies data from the companies endpoint
-        const companiesResponse = await fetch(`https://businesswallet.eu/api/issue/companies`);
+        const companiesResponse = await fetch(`https://businesswallets.eu/api/issue/companies`);
         if (!companiesResponse.ok) {
             throw new Error('Failed to fetch companies data');
         }
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         }
 
         // Make request to issuer
-        const issuerResponse = await fetch('https://issuer.businesswallet.eu/openid4vc/jwt/issue', {
+        const issuerResponse = await fetch('https://issuer.businesswallets.eu/openid4vc/jwt/issue', {
             method: 'POST',
             headers: {
                 'accept': 'application/json',

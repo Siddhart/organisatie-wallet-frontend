@@ -37,8 +37,8 @@ const QRStep = ({ setStep }) => {
                 const data = await response.json();
                 console.log('Received session data:', data);
 
-                if (data && data.data && data.data.data) {
-                    setPidData(data.data.data);
+                if (data && data.data) {
+                    setPidData(data.data);
                     setShowConfirmation(true);
                     clearInterval(pollInterval);
                 }
@@ -206,7 +206,7 @@ const QRStep = ({ setStep }) => {
                                             "ra": [{ 
                                                 "n": "Persoonsgegevens", 
                                                 "a": ["Voornaam", "Achternaam", "Geboortedatum", "Geboorteplaats", "Geboorteland", "BSN"], 
-                                                "i": "https://businesswallet.eu/ro.png" 
+                                                "i": "https://businesswallets.eu/ro.png" 
                                             }], 
                                             "pi": "https://websloth.agency/logo.png" 
                                         })
