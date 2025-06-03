@@ -295,7 +295,187 @@ const QRStep = ({ setStep }) => {
     }
 
     if (showConfirmation && pidData) {
-        const attributes = pidData.data.attributes;
+        const mockData = {
+            "id": "fz627152a1c",
+            "data": {
+                "id": "pid",
+                "docType": "com.example.pid",
+                "issuer": {
+                    "id": "943441129",
+                    "legalName": {
+                        "nl": "Rijksdienst voor Identiteits­gegevens"
+                    },
+                    "displayName": {
+                        "nl": "Rijksdienst voor Identiteits­gegevens"
+                    },
+                    "category": {
+                        "en": "Government",
+                        "nl": "Overheid"
+                    },
+                    "description": {
+                        "en": "RvIG is the authority and director for the secure and reliable use of identity data.",
+                        "nl": "RvIG is de autoriteit en regisseur van het veilig en betrouwbaar gebruik van identiteits­gegevens."
+                    },
+                    "logo": {
+                        "type": "asset",
+                        "data": "assets/non-free/logos/rijksoverheid.png"
+                    },
+                    "webUrl": "https://www.rvig.nl/",
+                    "privacyPolicyUrl": "https://www.rvig.nl/over-deze-site/privacyverklaring-rijksdienst-voor-identiteitsgegevens",
+                    "countryCode": null,
+                    "city": {
+                        "en": "The Hague, The Netherlands",
+                        "nl": "Den Haag, Nederland"
+                    },
+                    "department": null,
+                    "kvk": "27373207"
+                },
+                "front": {
+                    "title": {
+                        "en": "Personal data",
+                        "nl": "Persoons­gegevens"
+                    },
+                    "subtitle": {
+                        "en": "Willeke Liselotte",
+                        "nl": "Willeke Liselotte"
+                    },
+                    "info": null,
+                    "logoImage": "assets/non-free/logos/card_rijksoverheid.png",
+                    "holoImage": "assets/non-free/svg/rijks_card_holo.svg",
+                    "backgroundImage": "assets/non-free/svg/rijks_card_bg_light.svg",
+                    "theme": "light"
+                },
+                "attributes": [
+                    {
+                        "key": "mock.firstNames",
+                        "label": {
+                            "nl": "Voornamen",
+                            "en": "First names"
+                        },
+                        "value": {
+                            "type": "string",
+                            "value": "Willeke Liselotte"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.lastName",
+                        "label": {
+                            "nl": "Achternaam",
+                            "en": "Surname"
+                        },
+                        "value": {
+                            "type": "string",
+                            "value": "De Bruijn"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.birthName",
+                        "label": {
+                            "nl": "Naam bij geboorte",
+                            "en": "Birth name"
+                        },
+                        "value": {
+                            "type": "string",
+                            "value": "Molenaar"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.gender",
+                        "label": {
+                            "nl": "Geslacht",
+                            "en": "Gender"
+                        },
+                        "value": {
+                            "type": "gender",
+                            "value": "female"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.birthDate",
+                        "label": {
+                            "nl": "Geboortedatum",
+                            "en": "Birth date"
+                        },
+                        "value": {
+                            "type": "date",
+                            "value": 858034800000
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.olderThan18",
+                        "label": {
+                            "nl": "Ouder dan 18",
+                            "en": "Older than 18"
+                        },
+                        "value": {
+                            "type": "bool",
+                            "value": "true"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.birthPlace",
+                        "label": {
+                            "nl": "Geboorteplaats",
+                            "en": "Birthplace"
+                        },
+                        "value": {
+                            "type": "string",
+                            "value": "Delft"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.birthCountry",
+                        "label": {
+                            "nl": "Geboorteland",
+                            "en": "Country of birth"
+                        },
+                        "value": {
+                            "type": "string",
+                            "value": "Nederland"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.hasSpouseOrPartner",
+                        "label": {
+                            "nl": "Getrouwd of geregistreerd partnerschap",
+                            "en": "Married or registered partnership"
+                        },
+                        "value": {
+                            "type": "bool",
+                            "value": "true"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    },
+                    {
+                        "key": "mock.citizenshipNumber",
+                        "label": {
+                            "nl": "Burger­service­nummer (BSN)",
+                            "en": "BSN"
+                        },
+                        "value": {
+                            "type": "string",
+                            "value": "111222333"
+                        },
+                        "sourceCardDocType": "com.example.pid"
+                    }
+                ],
+                "config": {
+                    "updatable": false,
+                    "removable": false
+                }
+            },
+            "createdAt": 1748973752296
+        };
+        
+        const attributes = mockData.data.attributes;
         
         const userData = {
             firstName: attributes.find(attr => attr.key === 'mock.firstNames')?.value.value,
